@@ -69,6 +69,12 @@ __inline int c99_snprintf(char *outBuf, size_t size, const char *format, ...)
 #endif
 
 
+#ifdef FC_NO_FORMAT
+#define FC_EXTRACT_VARARGS(buffer, start_args) \
+{ \
+    strncopy(buffer, start_args, fc_buffer_size); \
+}
+#else
 #define FC_EXTRACT_VARARGS(buffer, start_args) \
 { \
     va_list lst; \
@@ -76,6 +82,7 @@ __inline int c99_snprintf(char *outBuf, size_t size, const char *format, ...)
     vsnprintf(buffer, fc_buffer_size, start_args, lst); \
     va_end(lst); \
 }
+#endif
 
 // Extra pixels of padding around each glyph to avoid linear filtering artifacts
 #define FC_CACHE_PADDING 1
@@ -1762,7 +1769,7 @@ static void set_color_for_all_caches(FC_Font* font, SDL_Color color)
     }
 }
 
-FC_Rect FC_Draw(FC_Font* font, FC_Target* dest, float x, float y, const char* formatted_text, ...)
+FC_Rect FC_Draw(FC_Font* font, FC_Target* dest, float x, float y, FC_TEXT_PARAM)
 {
     if(formatted_text == NULL || font == NULL)
         return FC_MakeRect(x, y, 0, 0);
@@ -2051,7 +2058,7 @@ static void FC_DrawColumnFromBuffer(FC_Font* font, FC_Target* dest, FC_Rect box,
         *total_height = y - box.y;
 }
 
-FC_Rect FC_DrawBox(FC_Font* font, FC_Target* dest, FC_Rect box, const char* formatted_text, ...)
+FC_Rect FC_DrawBox(FC_Font* font, FC_Target* dest, FC_Rect box, FC_TEXT_PARAM)
 {
     Uint8 useClip;
     if(formatted_text == NULL || font == NULL)
@@ -2083,7 +2090,7 @@ FC_Rect FC_DrawBox(FC_Font* font, FC_Target* dest, FC_Rect box, const char* form
     return box;
 }
 
-FC_Rect FC_DrawBoxAlign(FC_Font* font, FC_Target* dest, FC_Rect box, FC_AlignEnum align, const char* formatted_text, ...)
+FC_Rect FC_DrawBoxAlign(FC_Font* font, FC_Target* dest, FC_Rect box, FC_AlignEnum align, FC_TEXT_PARAM)
 {
     Uint8 useClip;
     if(formatted_text == NULL || font == NULL)
@@ -2114,7 +2121,7 @@ FC_Rect FC_DrawBoxAlign(FC_Font* font, FC_Target* dest, FC_Rect box, FC_AlignEnu
     return box;
 }
 
-FC_Rect FC_DrawBoxScale(FC_Font* font, FC_Target* dest, FC_Rect box, FC_Scale scale, const char* formatted_text, ...)
+FC_Rect FC_DrawBoxScale(FC_Font* font, FC_Target* dest, FC_Rect box, FC_Scale scale, FC_TEXT_PARAM)
 {
     Uint8 useClip;
     if(formatted_text == NULL || font == NULL)
@@ -2145,7 +2152,7 @@ FC_Rect FC_DrawBoxScale(FC_Font* font, FC_Target* dest, FC_Rect box, FC_Scale sc
     return box;
 }
 
-FC_Rect FC_DrawBoxColor(FC_Font* font, FC_Target* dest, FC_Rect box, SDL_Color color, const char* formatted_text, ...)
+FC_Rect FC_DrawBoxColor(FC_Font* font, FC_Target* dest, FC_Rect box, SDL_Color color, FC_TEXT_PARAM)
 {
     Uint8 useClip;
     if(formatted_text == NULL || font == NULL)
@@ -2176,7 +2183,7 @@ FC_Rect FC_DrawBoxColor(FC_Font* font, FC_Target* dest, FC_Rect box, SDL_Color c
     return box;
 }
 
-FC_Rect FC_DrawBoxEffect(FC_Font* font, FC_Target* dest, FC_Rect box, FC_Effect effect, const char* formatted_text, ...)
+FC_Rect FC_DrawBoxEffect(FC_Font* font, FC_Target* dest, FC_Rect box, FC_Effect effect, FC_TEXT_PARAM)
 {
     Uint8 useClip;
     if(formatted_text == NULL || font == NULL)
@@ -2207,7 +2214,7 @@ FC_Rect FC_DrawBoxEffect(FC_Font* font, FC_Target* dest, FC_Rect box, FC_Effect 
     return box;
 }
 
-FC_Rect FC_DrawColumn(FC_Font* font, FC_Target* dest, float x, float y, Uint16 width, const char* formatted_text, ...)
+FC_Rect FC_DrawColumn(FC_Font* font, FC_Target* dest, float x, float y, Uint16 width, FC_TEXT_PARAM)
 {
     FC_Rect box = {x, y, width, 0};
     int total_height;
@@ -2224,7 +2231,7 @@ FC_Rect FC_DrawColumn(FC_Font* font, FC_Target* dest, float x, float y, Uint16 w
     return FC_MakeRect(box.x, box.y, width, total_height);
 }
 
-FC_Rect FC_DrawColumnAlign(FC_Font* font, FC_Target* dest, float x, float y, Uint16 width, FC_AlignEnum align, const char* formatted_text, ...)
+FC_Rect FC_DrawColumnAlign(FC_Font* font, FC_Target* dest, float x, float y, Uint16 width, FC_AlignEnum align, FC_TEXT_PARAM)
 {
     FC_Rect box = {x, y, width, 0};
     int total_height;
@@ -2253,7 +2260,7 @@ FC_Rect FC_DrawColumnAlign(FC_Font* font, FC_Target* dest, float x, float y, Uin
     return FC_MakeRect(box.x, box.y, width, total_height);
 }
 
-FC_Rect FC_DrawColumnScale(FC_Font* font, FC_Target* dest, float x, float y, Uint16 width, FC_Scale scale, const char* formatted_text, ...)
+FC_Rect FC_DrawColumnScale(FC_Font* font, FC_Target* dest, float x, float y, Uint16 width, FC_Scale scale, FC_TEXT_PARAM)
 {
     FC_Rect box = {x, y, width, 0};
     int total_height;
@@ -2270,7 +2277,7 @@ FC_Rect FC_DrawColumnScale(FC_Font* font, FC_Target* dest, float x, float y, Uin
     return FC_MakeRect(box.x, box.y, width, total_height);
 }
 
-FC_Rect FC_DrawColumnColor(FC_Font* font, FC_Target* dest, float x, float y, Uint16 width, SDL_Color color, const char* formatted_text, ...)
+FC_Rect FC_DrawColumnColor(FC_Font* font, FC_Target* dest, float x, float y, Uint16 width, SDL_Color color, FC_TEXT_PARAM)
 {
     FC_Rect box = {x, y, width, 0};
     int total_height;
@@ -2287,7 +2294,7 @@ FC_Rect FC_DrawColumnColor(FC_Font* font, FC_Target* dest, float x, float y, Uin
     return FC_MakeRect(box.x, box.y, width, total_height);
 }
 
-FC_Rect FC_DrawColumnEffect(FC_Font* font, FC_Target* dest, float x, float y, Uint16 width, FC_Effect effect, const char* formatted_text, ...)
+FC_Rect FC_DrawColumnEffect(FC_Font* font, FC_Target* dest, float x, float y, Uint16 width, FC_Effect effect, FC_TEXT_PARAM)
 {
     FC_Rect box = {x, y, width, 0};
     int total_height;
@@ -2382,7 +2389,7 @@ static FC_Rect FC_RenderRight(FC_Font* font, FC_Target* dest, float x, float y, 
 
 
 
-FC_Rect FC_DrawScale(FC_Font* font, FC_Target* dest, float x, float y, FC_Scale scale, const char* formatted_text, ...)
+FC_Rect FC_DrawScale(FC_Font* font, FC_Target* dest, float x, float y, FC_Scale scale, FC_TEXT_PARAM)
 {
     if(formatted_text == NULL || font == NULL)
         return FC_MakeRect(x, y, 0, 0);
@@ -2394,7 +2401,7 @@ FC_Rect FC_DrawScale(FC_Font* font, FC_Target* dest, float x, float y, FC_Scale 
     return FC_RenderLeft(font, dest, x, y, scale, fc_buffer);
 }
 
-FC_Rect FC_DrawAlign(FC_Font* font, FC_Target* dest, float x, float y, FC_AlignEnum align, const char* formatted_text, ...)
+FC_Rect FC_DrawAlign(FC_Font* font, FC_Target* dest, float x, float y, FC_AlignEnum align, FC_TEXT_PARAM)
 {
     if(formatted_text == NULL || font == NULL)
         return FC_MakeRect(x, y, 0, 0);
@@ -2423,7 +2430,7 @@ FC_Rect FC_DrawAlign(FC_Font* font, FC_Target* dest, float x, float y, FC_AlignE
     return result;
 }
 
-FC_Rect FC_DrawColor(FC_Font* font, FC_Target* dest, float x, float y, SDL_Color color, const char* formatted_text, ...)
+FC_Rect FC_DrawColor(FC_Font* font, FC_Target* dest, float x, float y, SDL_Color color, FC_TEXT_PARAM)
 {
     if(formatted_text == NULL || font == NULL)
         return FC_MakeRect(x, y, 0, 0);
@@ -2436,7 +2443,7 @@ FC_Rect FC_DrawColor(FC_Font* font, FC_Target* dest, float x, float y, SDL_Color
 }
 
 
-FC_Rect FC_DrawEffect(FC_Font* font, FC_Target* dest, float x, float y, FC_Effect effect, const char* formatted_text, ...)
+FC_Rect FC_DrawEffect(FC_Font* font, FC_Target* dest, float x, float y, FC_Effect effect, FC_TEXT_PARAM)
 {
     if(formatted_text == NULL || font == NULL)
         return FC_MakeRect(x, y, 0, 0);
@@ -2487,7 +2494,7 @@ Uint16 FC_GetLineHeight(FC_Font* font)
     return font->height;
 }
 
-Uint16 FC_GetHeight(FC_Font* font, const char* formatted_text, ...)
+Uint16 FC_GetHeight(FC_Font* font, FC_TEXT_PARAM)
 {
     if(formatted_text == NULL || font == NULL)
         return 0;
@@ -2507,7 +2514,7 @@ Uint16 FC_GetHeight(FC_Font* font, const char* formatted_text, ...)
     return font->height*numLines + font->lineSpacing*(numLines - 1);  //height*numLines;
 }
 
-Uint16 FC_GetWidth(FC_Font* font, const char* formatted_text, ...)
+Uint16 FC_GetWidth(FC_Font* font, FC_TEXT_PARAM)
 {
     if(formatted_text == NULL || font == NULL)
         return 0;
@@ -2538,7 +2545,7 @@ Uint16 FC_GetWidth(FC_Font* font, const char* formatted_text, ...)
 }
 
 // If width == -1, use no width limit
-FC_Rect FC_GetCharacterOffset(FC_Font* font, Uint16 position_index, int column_width, const char* formatted_text, ...)
+FC_Rect FC_GetCharacterOffset(FC_Font* font, Uint16 position_index, int column_width, FC_TEXT_PARAM)
 {
     FC_Rect result = {0, 0, 1, FC_GetLineHeight(font)};
     FC_StringList *ls, *iter;
@@ -2591,7 +2598,7 @@ FC_Rect FC_GetCharacterOffset(FC_Font* font, Uint16 position_index, int column_w
 }
 
 
-Uint16 FC_GetColumnHeight(FC_Font* font, Uint16 width, const char* formatted_text, ...)
+Uint16 FC_GetColumnHeight(FC_Font* font, Uint16 width, FC_TEXT_PARAM)
 {
     int y = 0;
 
@@ -2639,7 +2646,7 @@ static int FC_GetDescentFromCodepoint(FC_Font* font, Uint32 codepoint)
     return glyph.rect.h;
 }
 
-int FC_GetAscent(FC_Font* font, const char* formatted_text, ...)
+int FC_GetAscent(FC_Font* font, FC_TEXT_PARAM)
 {
     Uint32 codepoint;
     int max, ascent;
@@ -2670,7 +2677,7 @@ int FC_GetAscent(FC_Font* font, const char* formatted_text, ...)
     return max;
 }
 
-int FC_GetDescent(FC_Font* font, const char* formatted_text, ...)
+int FC_GetDescent(FC_Font* font, FC_TEXT_PARAM)
 {
     Uint32 codepoint;
     int max, descent;
@@ -2744,7 +2751,7 @@ SDL_Color FC_GetDefaultColor(FC_Font* font)
     return font->default_color;
 }
 
-FC_Rect FC_GetBounds(FC_Font* font, float x, float y, FC_AlignEnum align, FC_Scale scale, const char* formatted_text, ...)
+FC_Rect FC_GetBounds(FC_Font* font, float x, float y, FC_AlignEnum align, FC_Scale scale, FC_TEXT_PARAM)
 {
     FC_Rect result = {x, y, 0, 0};
 
@@ -2783,7 +2790,7 @@ Uint8 FC_InRect(float x, float y, FC_Rect input_rect)
 }
 
 // TODO: Make it work with alignment
-Uint16 FC_GetPositionFromOffset(FC_Font* font, float x, float y, int column_width, FC_AlignEnum align, const char* formatted_text, ...)
+Uint16 FC_GetPositionFromOffset(FC_Font* font, float x, float y, int column_width, FC_AlignEnum align, FC_TEXT_PARAM)
 {
     FC_StringList *ls, *iter;
     Uint8 done = 0;
@@ -2830,7 +2837,7 @@ Uint16 FC_GetPositionFromOffset(FC_Font* font, float x, float y, int column_widt
     return position;
 }
 
-int FC_GetWrappedText(FC_Font* font, char* result, int max_result_size, Uint16 width, const char* formatted_text, ...)
+int FC_GetWrappedText(FC_Font* font, char* result, int max_result_size, Uint16 width, FC_TEXT_PARAM)
 {
     FC_StringList *ls, *iter;
 
